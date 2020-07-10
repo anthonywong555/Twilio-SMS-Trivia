@@ -1,19 +1,24 @@
-** Please note that this project is highly unstable.
+** Please note that this project is highly unstable. **
 
-** It was a weekend hackathon project.
+** It was a weekend hackathon project. **
 
-** Needs to be rewritten in React.js
+** Needs to be rewritten with a front-end framework. **
 
 # Twilio-SMS-Trivia
 
 ![](./assets/demo.gif)
 
-## Setup
+## Prerequisite
 
+Before you can get started you will need the following:
+- [Twilio Project](https://www.twilio.com/try-twilio)
+- [Twilio Phone Number](https://support.twilio.com/hc/en-us/articles/223135247-How-to-Search-for-and-Buy-a-Twilio-Phone-Number-from-Console)
+- [Twilio CLI](https://github.com/twilio/twilio-cli)
+- [Twilio CLI Plugin: Serverless](https://github.com/twilio-labs/plugin-serverless)
 
 ### Deploy Autopilot
 
-In the twilio/autopilot execute the following command
+In ./twilio/autopilot execute the following command:
 
 ```sh
 twilio autopilot:create
@@ -21,7 +26,7 @@ twilio autopilot:create
 
 ### Deploy Serverless
 
-In the twilio/serverless execute the following command
+In ./twilio/serverless execute the following command:
 
 ```sh
 twilio serverless:promote
@@ -31,8 +36,10 @@ Take a note of the Twilio Serverless Domain. You will need this later.
 
 ### Deploy Studio
 
-```sh
+In ./twilio/studio execute the following command:
 
+```sh
+twilio api:studio:v2:flows:create -p Twilio-SMS-Trivia --definition "`cat Trivia-Flow.json`" --friendly-name Trivia-Flow --status draft
 ```
 
 ### Edit Step
@@ -56,11 +63,11 @@ In Serverless add the following .env
 
 #### Modify Code
 
+After deploying all the code you will need to modify the following lines:
 
-
-| File Name                                     | Line | Template                            |
-|-----------------------------------------------|------|-------------------------------------|
-| twilio/serverless/assets/js/twilio-handler.js | 121  | <<INSERT TWILIO SERVERLESS DOMAIN>> |
-| twilio/serverless/assets/index.html           | 115  | <<INSERT TWILIO PHONE NUMBER>>      |
-| twilio/serverless/assets/home.html            | 22   | <<INSERT TWILIO PHONE NUMBER>>      |
-| twilio/serverless/assets/home.html            | 86   | <<INSERT TWILIO SERVERLESS DOMAIN>> |
+| File Name                                     | Line | Template                        |
+|-----------------------------------------------|------|---------------------------------|
+| twilio/serverless/assets/js/twilio-handler.js | 121  | INSERT TWILIO SERVERLESS DOMAIN |
+| twilio/serverless/assets/index.html           | 115  | INSERT TWILIO PHONE NUMBER      |
+| twilio/serverless/assets/home.html            | 22   | INSERT TWILIO PHONE NUMBER      |
+| twilio/serverless/assets/home.html            | 86   | INSERT TWILIO SERVERLESS DOMAIN |
