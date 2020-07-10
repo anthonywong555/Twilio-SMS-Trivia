@@ -1,8 +1,8 @@
-** Please note that this project is highly unstable. **
+**Please note that this project is highly unstable.**
 
-** It was a weekend hackathon project. **
+**It was a weekend hackathon project.**
 
-** Needs to be rewritten with a front-end framework. **
+**Needs to be rewritten with a front-end framework.**
 
 # Twilio-SMS-Trivia
 
