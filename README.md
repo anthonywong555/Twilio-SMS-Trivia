@@ -1,6 +1,6 @@
 **Please note that this project is highly unstable.**
 
-**It was a weekend hackathon project.**
+**This was a weekend hackathon project.**
 
 **Needs to be rewritten with a front-end framework.**
 
