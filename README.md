@@ -61,6 +61,8 @@ In Serverless add the following .env
 | TWILIO_SYNC_API_KEY     	| SKXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 	|
 | TWILIO_SYNC_API_SECRET  	| XXXXXXXXXXXXXXXXXXXXXXXXXXX         	|
 
+In Autopilot replace the `placeholderTwilioFunctions` with your Twilio Serverless Domain.
+
 #### Modify Code
 
 After deploying all the code you will need to modify the following lines:

@@ -174,7 +174,7 @@
                             "on_complete" : {
                                 "redirect" : {
                                     "method" : "POST",
-                                    "uri" : "https://serverless-5099-dev.twil.io/trivia/autopilot/handleGreetings"
+                                    "uri" : "https://placeholderTwilioFunctions.twil.io/trivia/autopilot/handleGreetings"
                                 }
                             },
                             "name" : "playerInformation",
