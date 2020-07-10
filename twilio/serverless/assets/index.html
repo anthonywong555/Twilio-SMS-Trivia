@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!--<link rel="stylesheet" href="./style.css" />-->
+    <title>Twilio Trivia</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="https://media.twiliocdn.com/sdk/js/sync/releases/0.12.2/twilio-sync.js"></script>
+    <script src="./js/lib/custom-matter.js"></script>
+    <style>
+        body {
+            font-family: 'Press+Start+2P', Sans-Serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute !important;
+            top: 90px;
+        }
+
+        #main-background {
+            z-index: -1;
+            top: 0px;
+        }
+
+        .question {
+            z-index: 1;
+            font-size: 73px;
+            padding-left: 700px;
+        }
+
+        .phone-number {
+            position: absolute;
+            z-index: 1;
+            font-size: 73px;
+        }
+
+        #selection {
+            background-color: black;
+        }
+
+        .selections {
+            z-index: 1;
+            position: absolute;
+            font-size: 65px;
+            color:white;
+            background-color: #F22F46;
+            /* opacity: 70%; */
+        }
+
+        .selections-left {
+            left: 15px;
+        }
+
+        .selections-right {
+            left: 970px;
+        }
+
+        .selections-first-row {
+            top: 100px;
+        }
+
+        .selections-second-row {
+            top: 645px;
+        }
+
+        #question, #footer-note {
+            text-align: center;
+            font-size: 28px;
+        }
+
+        #question {
+            border: 1px solid #F22F46;
+            background-color: #F22F46;
+            color: white;
+            margin: 0.5px;
+            font-size: 76px;
+        }
+
+        #question > p {
+            margin: 0px;
+        }
+
+        #footer-note {
+            border: 1px solid #39f;
+            background-color: #39f;
+            color: white;
+        }
+    </style>
+  </head>
+  <body onbeforeunload="return myFunction()">
+    <div id="home-screen">
+
+    </div>
+    <div id="game-screen">
+        <div id="question">
+        </div>
+        <div id="selection">
+            <img id="main-background" alt="Background Image">
+            <div id="possible-answer">
+                <!--
+                <strong class="selections selections-left selections-first-row">1</strong>
+                <strong class="selections selections-right selections-first-row">2</strong>
+                <strong class="selections selections-left selections-second-row">3</strong>
+                <strong class="selections selections-right selections-second-row">4</strong>
+                -->
+            </div>
+        </div>
+        <div id="footer-note">
+            <p>Text Answer # To <<TWILIO PHONE NUMBER>></p>
+        </div>
+    </div>
+    <div id="score-screen">
+
+    </div>
+    <!-- Plugins -->
+    <!-- <script src="./js/lib/matter-wrap.js"></script> -->
+    <script type="text/javascript" src="./js/demo.js"></script>
+    <script type="text/javascript" src="./js/twilio-handler.js"></script>
+    <!--<script src="./js/customRender.js"></script>-->
+    <script type="text/javascript">
+        function myFunction() {
+            return "Write something clever here...";
+        }
+         
+        $( document ).ready(async () => {
+            const tokenResponse = await getTwilioAuth();
+            const syncClient = await authSync(tokenResponse);
+            await setSyncClientSubscribe(syncClient);
+
+            buildGrid();
+            
+            setSyncClient(syncClient);
+            await createNewSession();
+        });
+
+        document.onkeydown = function(e) {
+            switch(e.which) {
+                case 37: // left
+                    previousQuestion();
+                    break;
+                case 39: // right
+                    nextQuestion();
+                    break;
+                default: return; // exit this handler for other keys
+            }
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+        };
+    </script>
+  </body>
+</html>

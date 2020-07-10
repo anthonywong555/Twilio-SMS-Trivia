@@ -1,0 +1,368 @@
+{
+    "description": "A New Flow",
+    "states": [
+      {
+        "name": "Trigger",
+        "type": "trigger",
+        "transitions": [
+          {
+            "next": "set_variables_1",
+            "event": "incomingMessage"
+          },
+          {
+            "event": "incomingCall"
+          },
+          {
+            "event": "incomingRequest"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      },
+      {
+        "name": "autopilot_1",
+        "type": "send-to-auto-pilot",
+        "transitions": [
+          {
+            "event": "sessionEnded"
+          },
+          {
+            "event": "failure"
+          }
+        ],
+        "properties": {
+          "chat_channel": "{{trigger.message.ChannelSid}}",
+          "offset": {
+            "x": 190,
+            "y": 530
+          },
+          "memory_parameters": [
+            {
+              "value": "{{trigger.message.From}}",
+              "key": "playerPhoneNumber"
+            }
+          ],
+          "autopilot_assistant_sid": "UA4d1165e50efc237c6898ae9327110629",
+          "from": "{{flow.channel.address}}",
+          "chat_service": "{{trigger.message.InstanceSid}}",
+          "body": "{{trigger.message.Body}}",
+          "target_task": "greeting",
+          "timeout": 14400
+        }
+      },
+      {
+        "name": "fetchPlayerInfo",
+        "type": "run-function",
+        "transitions": [
+          {
+            "next": "getQuestion",
+            "event": "success"
+          },
+          {
+            "next": "autopilot_1",
+            "event": "fail"
+          }
+        ],
+        "properties": {
+          "service_sid": "ZSab10d86b426212698f14712f7e47f401",
+          "environment_sid": "ZEfaf27b0bbfb55249338503ecdf06f962",
+          "offset": {
+            "x": 0,
+            "y": 210
+          },
+          "function_sid": "ZH0e1eb652047ca340c715a2d027cdbd16",
+          "parameters": [
+            {
+              "value": "players",
+              "key": "mapName"
+            },
+            {
+              "value": "{{trigger.message.From}}",
+              "key": "mapItemName"
+            },
+            {
+              "value": "{{flow.variables.syncServiceSID}}",
+              "key": "syncServiceSID"
+            }
+          ],
+          "url": "https://placeholderTwilioServerlessDomain.twil.io/twilio/sync/map/item/fetch"
+        }
+      },
+      {
+        "name": "validateVote",
+        "type": "run-function",
+        "transitions": [
+          {
+            "next": "split_1",
+            "event": "success"
+          },
+          {
+            "event": "fail"
+          }
+        ],
+        "properties": {
+          "service_sid": "ZSab10d86b426212698f14712f7e47f401",
+          "environment_sid": "ZEfaf27b0bbfb55249338503ecdf06f962",
+          "offset": {
+            "x": -210,
+            "y": 540
+          },
+          "function_sid": "ZH1b7744cdc0bae1e000969142b919e5c0",
+          "parameters": [
+            {
+              "value": "{{trigger.message.Body}}",
+              "key": "vote"
+            },
+            {
+              "value": "{{trigger.message.From}}",
+              "key": "userId"
+            },
+            {
+              "value": "question{{widgets.getQuestion.parsed.currentQuestionIndex}}",
+              "key": "question"
+            }
+          ],
+          "url": "https://placeholderTwilioServerlessDomain.twil.io/trivia/studio/validateVote"
+        }
+      },
+      {
+        "name": "sendInvalidVoteMsg",
+        "type": "send-message",
+        "transitions": [
+          {
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": -400,
+            "y": 1020
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "{{widgets.validateVote.parsed.result}}"
+        }
+      },
+      {
+        "name": "split_1",
+        "type": "split-based-on",
+        "transitions": [
+          {
+            "next": "sendInvalidVoteMsg",
+            "event": "noMatch"
+          },
+          {
+            "next": "saveVoteInQuestionSync",
+            "event": "match",
+            "conditions": [
+              {
+                "friendly_name": "If value equal_to true",
+                "arguments": [
+                  "{{widgets.validateVote.parsed.result}}"
+                ],
+                "type": "equal_to",
+                "value": "true"
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "input": "{{widgets.validateVote.parsed.result}}",
+          "offset": {
+            "x": -220,
+            "y": 780
+          }
+        }
+      },
+      {
+        "name": "sendConfirmationMsg",
+        "type": "send-message",
+        "transitions": [
+          {
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 50,
+            "y": 1600
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "Thanks for your vote! You voted for {{trigger.message.Body}} ."
+        }
+      },
+      {
+        "name": "saveVoteInQuestionSync",
+        "type": "run-function",
+        "transitions": [
+          {
+            "next": "saveVoteInVoteSync",
+            "event": "success"
+          },
+          {
+            "next": "sendErrorMsg",
+            "event": "fail"
+          }
+        ],
+        "properties": {
+          "service_sid": "ZSab10d86b426212698f14712f7e47f401",
+          "environment_sid": "ZEfaf27b0bbfb55249338503ecdf06f962",
+          "offset": {
+            "x": 60,
+            "y": 1010
+          },
+          "function_sid": "ZH64954f1d92c6672ad3939b3bea818a9e",
+          "parameters": [
+            {
+              "value": "{{flow.variables.syncServiceSID}}",
+              "key": "syncServiceSID"
+            },
+            {
+              "value": "question{{widgets.getQuestion.parsed.currentQuestionIndex}}",
+              "key": "listSID"
+            },
+            {
+              "value": "{ \"vote\": \"{{trigger.message.Body}}\", \"userId\": \"{{trigger.message.From}}\"}",
+              "key": "data"
+            }
+          ],
+          "url": "https://placeholderTwilioServerlessDomain.twil.io/twilio/sync/list/item/insert"
+        }
+      },
+      {
+        "name": "sendErrorMsg",
+        "type": "send-message",
+        "transitions": [
+          {
+            "event": "sent"
+          },
+          {
+            "event": "failed"
+          }
+        ],
+        "properties": {
+          "offset": {
+            "x": 490,
+            "y": 1360
+          },
+          "service": "{{trigger.message.InstanceSid}}",
+          "channel": "{{trigger.message.ChannelSid}}",
+          "from": "{{flow.channel.address}}",
+          "to": "{{contact.channel.address}}",
+          "body": "An error has occur. Please notify the admin."
+        }
+      },
+      {
+        "name": "getQuestion",
+        "type": "run-function",
+        "transitions": [
+          {
+            "next": "validateVote",
+            "event": "success"
+          },
+          {
+            "event": "fail"
+          }
+        ],
+        "properties": {
+          "service_sid": "ZSab10d86b426212698f14712f7e47f401",
+          "environment_sid": "ZEfaf27b0bbfb55249338503ecdf06f962",
+          "offset": {
+            "x": -610,
+            "y": 260
+          },
+          "function_sid": "ZH449c14bcf8bbafd99c5ca570ba466f0e",
+          "parameters": [
+            {
+              "value": "{{flow.variables.syncServiceSID}}",
+              "key": "syncServiceSID"
+            },
+            {
+              "value": "settings",
+              "key": "documentSID"
+            }
+          ],
+          "url": "https://placeholderTwilioServerlessDomain.twil.io/twilio/sync/document/fetch"
+        }
+      },
+      {
+        "name": "set_variables_1",
+        "type": "set-variables",
+        "transitions": [
+          {
+            "next": "fetchPlayerInfo",
+            "event": "next"
+          }
+        ],
+        "properties": {
+          "variables": [
+            {
+              "value": "IS8692e8f34b7adbd9476c1ec4b2ddb4ac",
+              "key": "syncServiceSID"
+            }
+          ],
+          "offset": {
+            "x": 400,
+            "y": 180
+          }
+        }
+      },
+      {
+        "name": "saveVoteInVoteSync",
+        "type": "run-function",
+        "transitions": [
+          {
+            "next": "sendConfirmationMsg",
+            "event": "success"
+          },
+          {
+            "next": "sendErrorMsg",
+            "event": "fail"
+          }
+        ],
+        "properties": {
+          "service_sid": "ZSab10d86b426212698f14712f7e47f401",
+          "environment_sid": "ZEfaf27b0bbfb55249338503ecdf06f962",
+          "offset": {
+            "x": 70,
+            "y": 1310
+          },
+          "function_sid": "ZH64954f1d92c6672ad3939b3bea818a9e",
+          "parameters": [
+            {
+              "value": "{{flow.variables.syncServiceSID}}",
+              "key": "syncServiceSID"
+            },
+            {
+              "value": "votes",
+              "key": "listSID"
+            },
+            {
+              "value": "{ \"vote\": \"{{trigger.message.Body}}\", \"userId\": \"{{trigger.message.From}}\"}",
+              "key": "data"
+            }
+          ],
+          "url": "https://placeholderTwilioServerlessDomain.twil.io/twilio/sync/list/item/insert"
+        }
+      }
+    ],
+    "initial_state": "Trigger",
+    "flags": {
+      "allow_concurrent_calls": true
+    }
+  }
